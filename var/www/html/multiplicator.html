@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiplicator page</title>
+    <style>
+        html { color-scheme: light dark; }
+        body { width: 35em; margin: 0 auto;
+               font-family: Tahoma, Verdana, Arial, sans-serif; }
+    </style>
+</head>
+<body>
+<h1>Multiplicator</h1>
+<p>This multiplicator uses the CGI to call a script and returns the answer.</p>
+<br >
+<form id="multiplicationForm">
+    <div><label>Multiplicand 1: <input name="multiplicand1" id="multiplicand1" size="5"></label></div>
+    <div><label>Multiplicand 2: <input name="multiplicand2" id="multiplicand2" size="5"></label></div>
+    <div><input type="submit" value="Multiply!"></div>
+</form>
+<p id="result"></p>
+
+<script>
+document.getElementById('multiplicationForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const multiplicand1 = document.getElementById('multiplicand1').value;
+    const multiplicand2 = document.getElementById('multiplicand2').value;
+    const resultElement = document.getElementById('result');
+
+    fetch(`/cgi/multiplicator.php?multiplicand1=${multiplicand1}&multiplicand2=${multiplicand2}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.result !== undefined) {
+                resultElement.textContent = `Result: ${data.result}`;
+            } else {
+                resultElement.textContent = `Error: ${data.error}`;
+            }
+        })
+        .catch(error => {
+            resultElement.textContent = `Error: ${error}`;
+        });
+});
+</script>
+</body>
+</html>
+

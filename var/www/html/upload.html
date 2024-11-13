@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload and Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        form input[type="file"] {
+            margin-bottom: 10px;
+        }
+        form input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #fileList {
+            list-style-type: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #fileList li {
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #fileList a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        #fileList button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #fileList button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+    <script>
+        function fetchFiles() {
+            fetch('/cgi/list_files.sh')
+                .then(response => response.json())
+                .then(data => {
+                    const fileList = document.getElementById('fileList');
+                    fileList.innerHTML = '';
+                    data.files.forEach(file => {
+                        const listItem = document.createElement('li');
+                        const downloadLink = document.createElement('a');
+                        const deleteButton = document.createElement('button');
+
+                        downloadLink.href = `/upload/${file}`;
+                        downloadLink.textContent = file;
+                        downloadLink.download = file;
+
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteFile(file);
+
+                        listItem.appendChild(downloadLink);
+                        listItem.appendChild(deleteButton);
+                        fileList.appendChild(listItem);
+                    });
+                });
+        }
+
+        function deleteFile(file) {
+            fetch(`/upload/${file}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        fetchFiles();
+                    } else {
+                        alert('Failed to delete file');
+                    }
+                });
+        }
+
+        function uploadComplete() {
+            const uploadStatus = document.getElementById('uploadStatus');
+            if (uploadStatus.dataset.uploading === "true") {
+                uploadStatus.textContent = 'Upload complete!';
+                fetchFiles();
+            }
+        }
+
+        window.onload = () => {
+            fetchFiles();
+            document.getElementById('uploadStatus').dataset.uploading = "false";
+        };
+    </script>
+</head>
+<body>
+    <h1>File Upload and Management</h1>
+
+    <h2>Upload a File</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data" target="upload_iframe" onsubmit="document.getElementById('uploadStatus').textContent = 'Uploading...'; document.getElementById('uploadStatus').dataset.uploading = 'true';">
+        <input type="file" name="file" required>
+        <input type="submit" value="Upload">
+    </form>
+    <iframe name="upload_iframe" style="display:none;" onload="uploadComplete()"></iframe>
+    <div id="uploadStatus" style="text-align:center; color: green;"></div>
+
+    <h2>Uploaded Files</h2>
+    <ul id="fileList"></ul>
+</body>
+</html>
+
