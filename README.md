@@ -14,4 +14,5 @@ The request parsing process and the configurations parsing and handling is inspi
 For the project we could chose between poll and select for I/O multiplexing. We went with select because we found it easier but we know that for scalebility poll performs better not to mention epoll()
 
 This webserv will only accept GET POST and DELETE requests sent with HTTP, it manages file upload and download, chunked and multiform request
+It supports CGI's in python, php, shell, there are a few examples on the website
 
