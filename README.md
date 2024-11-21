@@ -6,7 +6,8 @@ To use:
 - make
 - run with no args will launch the default.conf
 - else use another config
-we have a simple website to test some functionnalities open a browser and connect with http://localhost:8000
+
+we have a simple website to test some functionnalities, open a browser and connect with http://localhost:8000
 
 A simple webserver in Cpp++
 We extensively read the RFC before, and while coding the project. which definitely is a whole new world when never having done network related programming before.
